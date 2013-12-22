@@ -57,6 +57,14 @@ preDealDir(){
 	echo ${PRGDIR}
 }
 
+mustBeExist(){
+	# make sure it is exist.
+	local fileDir=${1};
+	if [ ! -e ${fileDir} ];
+	then
+		touch ${fileDir};
+	fi;
+}
 catIntoFile(){
 	#cat sentences into file
 	local sentences=${1};
@@ -65,7 +73,8 @@ catIntoFile(){
 	case ${3} in
 		"") eof="EOF";;
 		*) eof=${3};;
-	esac
+	esac;
+	mustBeExist ${fileDir};
 	if [ -w ${fileDir} ];
 	then
 		cat >>${fileDir}<<-${eof}
@@ -73,7 +82,7 @@ catIntoFile(){
 			${eof}
 	else
 		echo ${fileDir} can not be wrote!
-	fi
+	fi;
 }
 
 sedIntoFile(){
@@ -82,6 +91,7 @@ sedIntoFile(){
 	local fileDir=${2};
 	local sedType=${3};
 	local refSentence=${4};
+	mustBeExist ${fileDir};
 	if [ -w ${fileDir} ];
 	then
 		if [ $# -lt 2 ];
