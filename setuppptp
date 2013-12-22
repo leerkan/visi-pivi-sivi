@@ -1,0 +1,22 @@
+#! /bin/bash -
+# auto setup ppptp on ubuntu
+LC_ALL=C
+# BEGIN Tool Functions
+. $(dirname $0)/pffs
+# END Tool Functions
+
+ifYesDo "catIntoFile $'\n	TCPKeepAlive yes\n	ServerAliveInterval 120' /etc/ssh/ssh_config"; #set the ssh connection keeping alive.;
+ifYesDo "catIntoFile $'nospoof on' /etc/host.conf"; # nospoof.;
+ifYesDo "apt-get -y update"; # update.;
+ifYesDo "apt-get -y install pptpd"; # intall pptpd.;
+ifYesDo "catIntoFile $'test	*	vpn4testonly	*' /etc/ppp/chap-secrets"; #add username and password to pptpd.;
+ifYesDo "sedIntoFile 'localip 10.0.0.234-238,10.0.0.245\nremoteip 10.0.1.134-238,10.0.1.245' /etc/pptpd-conf after '#remoteip 192.168.1.234-238,192.168.1.245'"; # set local ip address and remote ip address for pptpd.;
+ifYesDo "sedIntoFile 'ms-dns 8.8.8.8\n208.67.220.220' /etc/ppp/pptpd-options after '#ms-dns 10.0.0.2'"; # add DNS server.;
+ifYesDo "service pptpd restart"; # restart pptpd.;
+ifYesDo "sedIntoFile 'net.ipv4.ip_forward=1' /etc/sysctl.cof after '#net.ipv4.ip_forward=1'"; # enable net.ipv4.ip_forward.;
+ifYesDo "iptables --table nat --append POSTROUTING --out-interface ppp0 --jump MASQUERADE"; # create nat rule for iptables.;
+ifYesDo "iptables -I FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu"; # solve a problem with MTU size variations.;
+#####################################################.;
+## save the rules and set them to restore on reboot .;
+ifYesDo "iptables-save > /etc/iptables-rules"; # save iptables rules.;
+ifYesDo "catIntoFile $'#!/bin/sh\n iptables-restore < /etc/iptables.rules\nexit 0' /etc/network/if-pre-up.d/iptablesload; chmod +x /etc/network/if-pre-up.d/iptablesload;"; # create /etc/network/if-pre-up.d/iptablesload and make it excutable.;

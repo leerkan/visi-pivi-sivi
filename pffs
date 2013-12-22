@@ -1,0 +1,110 @@
+#! /bin/bash -
+# these public functions for shell.
+# by using ../pffs to source it to current shell environment to call.
+formatStringToReg(){
+	s=$1
+	#s=${s//\ /\\\ }
+	s=${s//\//\\\/}
+	s=${s//\"/\\\"}
+	s=${s//\^/\\\^}
+	s=${s//\$/\\\$}
+	echo ${s}
+}
+
+ifYesDo(){
+	# ifYesDo "echo abc" will ask before eval "echo abc".
+	# with an answer q , the script will be executed quietly.
+	# or you can give the q to the second argument.eg. ifYesDo "echo abc" q.
+	# with a third argument to call ifYesDo, it will ask with the 3rd argument instead of the 1st argument, which will be executed.
+	#eg. ifYesDo "echo Hello World" "" "Do you want to echo hello world?" ;
+	local script=${1};
+	local defaultAnswer=${2}
+	local comment=${3};
+	case "${comment}" in
+		"") echo -n "${script}" "[y/n]:" ;;
+		*) echo -n "${comment}" "[y/n]:" ;;
+	esac
+	case ${defaultAnswer} in
+		y|Y|yes|Yes|q|Q|quiet|QUIET|n|N|no|NO) in=${defaultAnswer};
+			echo ${in};;
+		*) while read in ;do 
+			case "${in}" in
+				y|Y|yes|Yes|q|Q|quiet|QUIET|n|N|no|NO) break ;;
+				*) echo -n "press 'yes' or 'no':" ;;
+			esac
+		done;
+	esac
+	case "${in}" in
+		y|Y|yes|Yes) eval "${script}" ;;
+		q|Q|quiet|QUIET) eval "${script}" > /dev/null;;
+		n|N|no|NO) echo "fine, passed." ;;
+	esac
+}
+
+preDealDir(){
+	# resolve links - $0 may be a softlink
+	PRG="$0"
+	while [ -h "$PRG" ] ; do
+	  ls=`ls -ld "$PRG"`
+	  link=`expr "$ls" : '.*-> \(.*\)$'`
+	  if expr "$link" : '/.*' > /dev/null; then
+		PRG="$link"
+	  else
+		PRG=`dirname "$PRG"`/"$link"
+	  fi
+	done
+	PRGDIR=`dirname "$PRG"`
+	echo ${PRGDIR}
+}
+
+catIntoFile(){
+	#cat sentences into file
+	local sentences=${1};
+	local fileDir=${2};
+	local eof="EOF";
+	case ${3} in
+		"") eof="EOF";;
+		*) eof=${3};;
+	esac
+	if [ -w ${fileDir} ];
+	then
+		cat >>${fileDir}<<-${eof}
+			${sentences}
+			${eof}
+	else
+		echo ${fileDir} can not be wrote!
+	fi
+}
+
+sedIntoFile(){
+	#sed sentences after specified words in specified file.
+	local sentences=${1};
+	local fileDir=${2};
+	local sedType=${3};
+	local refSentence=${4};
+	if [ -w ${fileDir} ];
+	then
+		if [ $# -lt 2 ];
+		then
+			return 2;
+		elif [ $# -lt 4 ];
+		then # add sentences to the end of the file;
+			case ${sedType} in
+				""|a|after|AFTER) sed -i -e $"$ a ${sentences}" ${fileDir} ;;
+				b|before|BEFORE) sed -i -e $"$ i ${sentences}" ${fileDir} ;;
+				*) return 2 ;;
+			esac
+		elif [ $# -ge 4 ];
+		then
+			case ${sedType} in
+				""|a|after|AFTER) sed -i -e $"/^${refSentence}$/ a ${sentences}" ${fileDir} ;;
+				b|before|BEFORE) sed -i -e $"/^${refSentence}$/ i ${sentences}" ${fileDir} ;;
+				*) return 2 ;;
+			esac
+		else
+			return 2 ;
+		fi
+	else
+		echo ${fileDir} can not be wrote!
+	fi
+}
