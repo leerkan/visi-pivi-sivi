@@ -6,3 +6,5 @@ LC_ALL=C
 # END Tool Functions
 
 ifYesDo "catIntoFile $'\n	TCPKeepAlive yes\n	ServerAliveInterval 120' /etc/ssh/ssh_config"; #set the ssh connection keeping alive.;
+ifYesDo "echo -n \"change ssh port to:\"; read port; echo \${port}; sed -i -e \"s/^Port\ 22/Port\ \${port}/g\" /etc/ssh/sshd_config;"; # change ssh port; 
+ifYesDo "service ssh restart"; # restart ssh
