@@ -2,7 +2,7 @@
 # these public functions for shell.
 # by using ../pffs to source it to current shell environment to call.
 setGlobalVariable(){
-	pffs.var.templateFolderName="template";
+	pffs_var_templateFolderName="template";
 }
 setGlobalVariable;
 formatStringToReg(){
