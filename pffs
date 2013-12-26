@@ -1,6 +1,10 @@
 #! /bin/bash -
 # these public functions for shell.
 # by using ../pffs to source it to current shell environment to call.
+setGlobalVariable(){
+	pffs.var.templateFolderName="template";
+}
+setGlobalVariable;
 formatStringToReg(){
 	s=$1
 	#s=${s//\ /\\\ }

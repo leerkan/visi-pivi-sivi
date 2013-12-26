@@ -5,7 +5,6 @@ LC_ALL=C
 . $(dirname $0)/pffs
 # END Tool Functions
 
-ifYesDo "catIntoFile $'\n	TCPKeepAlive yes\n	ServerAliveInterval 120' /etc/ssh/ssh_config"; #set the ssh connection keeping alive.;
 ifYesDo "catIntoFile $'nospoof on' /etc/host.conf"; # nospoof.;
 ifYesDo "apt-get -y update"; # update.;
 ifYesDo "apt-get -y install pptpd"; # intall pptpd.;
