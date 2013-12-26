@@ -1,0 +1,8 @@
+#! /bin/bash -
+# auto setup ppptp on ubuntu
+LC_ALL=C
+# BEGIN Tool Functions
+. $(dirname $0)/pffs
+# END Tool Functions
+
+ifYesDo "catIntoFile $'\n	TCPKeepAlive yes\n	ServerAliveInterval 120' /etc/ssh/ssh_config"; #set the ssh connection keeping alive.;

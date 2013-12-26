@@ -1,0 +1,14 @@
+#! /bin/bash -
+# auto setup vim on ubuntu
+LC_ALL=C
+# BEGIN Tool Functions
+. $(dirname $0)/pffs
+# END Tool Functions
+
+setupvim(){
+	local fileDir="/etc/vim/vimrc";
+	local templateFileDir=${pffs.var.templateFolderName}"/etc.vim.vimrc";
+	ifYesDo "apt-get install  -y vim"; # install vim
+	ifYesDo "mustBeExist ${fileDir}; cp ${fileDir} ${fileDir}".bak"; cat ${templateFileDir} > ${fileDir}"; #set the ssh connection keeping alive.;
+}
+setupvim;
