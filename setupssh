@@ -4,7 +4,12 @@ LC_ALL=C
 # BEGIN Tool Functions
 . $(dirname $0)/pffs
 # END Tool Functions
-
-ifYesDo "catIntoFile $'\n	TCPKeepAlive yes\n	ServerAliveInterval 120' /etc/ssh/ssh_config"; #set the ssh connection keeping alive.;
-ifYesDo "echo -n \"change ssh port to:\"; read port; echo \${port}; sed -i -e \"s/^Port\ 22/Port\ \${port}/g\" /etc/ssh/sshd_config;"; # change ssh port; 
-ifYesDo "service ssh restart"; # restart ssh
+setupssh(){
+	local sshBannerTemplateFileName="etc.issue.ssh";
+	local sshBannerFileDir="/etc/issue.ssh";
+	ifYesDo "catIntoFile $'\n	TCPKeepAlive yes\n	ServerAliveInterval 120' /etc/ssh/ssh_config"; #set the ssh connection keeping alive.;
+	ifYesDo "echo -n \"change ssh port to:\"; read port; echo \${port}; sed -i -e \"s/^Port\ 22/Port\ \${port}/g\" /etc/ssh/sshd_config;"; # change ssh port.;
+	ifYesDo "catIntoFile \"\$(cat $(dirname $0)/${pffs_var_templateFolderName}/${sshBannerTemplateFileName})\" ${sshBannerFileDir}; sedIntoFile 'Banner '${sshBannerFileDir} /etc/ssh/sshd_config after \"\$(formatStringToReg \"#Banner /etc/issue.net\")\";"; # create ssh login banner.;
+	ifYesDo "service ssh restart"; # restart ssh.;
+}
+setupssh;

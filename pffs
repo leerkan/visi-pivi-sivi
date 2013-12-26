@@ -6,13 +6,13 @@ setGlobalVariable(){
 }
 setGlobalVariable;
 formatStringToReg(){
-	s=$1
+	s="$1";
 	#s=${s//\ /\\\ }
 	s=${s//\//\\\/}
 	s=${s//\"/\\\"}
 	s=${s//\^/\\\^}
 	s=${s//\$/\\\$}
-	echo ${s}
+	echo -n "${s}"
 }
 
 ifYesDo(){
@@ -95,6 +95,7 @@ sedIntoFile(){
 	local fileDir=${2};
 	local sedType=${3};
 	local refSentence=${4};
+echo "$refSentence";
 	mustBeExist ${fileDir};
 	if [ -w ${fileDir} ];
 	then
