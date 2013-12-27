@@ -1,0 +1,15 @@
+#! /bin/bash -
+# auto setup ppptp on ubuntu
+LC_ALL=C
+# BEGIN Tool Functions
+. $(dirname $0)/pffs
+# END Tool Functions
+addSudoUser(){
+	local sshBannerTemplateFileName="etc.issue.ssh";
+	local sshBannerFileDir="/etc/issue.ssh";
+	local userName="";
+	ifYesDo "apt-get update; apt-get install sudo;"; # make sure sudo is installed.;
+	ifYesDo "echo -n \"user name:\"; while read userName; do if [ ! \"\${userName}\" == \"\" ]; then adduser \${userName}; break; else echo -n \"User name can not be empty. New user name:\"; fi; done;"; # add user.;
+	ifYesDo "usermod -aG sudo \${userName}; groups \${userName};"; # add user to sudo group.;
+}
+addSudoUser;
