@@ -5,5 +5,5 @@ LC_ALL=C
 #. $(dirname $0)/pffs
 # END Tool Functions
 
-setupssh;
-setuppptp;
+bash setupssh;
+bash setuppptp;
