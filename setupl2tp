@@ -1,0 +1,27 @@
+#! /bin/bash -
+# auto setup l2tp on ubuntu
+LC_ALL=C
+# BEGIN Tool Functions
+. $(dirname $0)/pffs
+# END Tool Functions
+setupl2tp(){
+	ifYesDo "catIntoFile $'nospoof on' /etc/host.conf"; # nospoof.;
+	ifYesDo "apt-get -y update"; # update.;
+	ifYesDo "apt-get -y install openswan xl2tpd ppp"; # intall l2tp with default option.;
+	ifYesDo "apt-get -y install lsof "; # intall l2tp.;
+	ifYesDo "iptables --table nat --append POSTROUTING --jump MASQUERADE"; # create nat rule for iptables.;
+	ifYesDo "echo 'net.ipv4.ip_forward = 1' |  tee -a /etc/sysctl.confi\n echo 'net.ipv4.conf.all.accept_redirects = 0' |  tee -a /etc/sysctl.conf\n echo 'net.ipv4.conf.all.send_redirects = 0' |  tee -a /etc/sysctl.conf\n for vpn in /proc/sys/net/ipv4/conf/*; do echo 0 > $vpn/accept_redirects; echo 0 > $vpn/send_redirects; done\n sysctl -p"; # enable kernel IP packet forwarding and disable ICP redirects.;
+	ifYesDo "sedIntoFile 'for vpn in /proc/sys/net/ipv4/conf/*;\n	do echo 0 > $vpn/accept_redirects;\n	echo 0 > $vpn/send_redirects;\ndone\n iptables --table nat --append POSTROUTING --jump MASQUERADE' /etc/rc.local before 'exit 0'"; # To make sure this keeps working at boot you might want to add the following to /etc/rc.local.;
+	ifYesDo "cat /etc/ipsec.d/examples/l2tp-psk.conf >> /etc/ipsec.conf; local gatewayIP=$(ip route|grep default|awk '{ print $(3)}'); sedIntoFile '	left=${gatewayIP}' /etc/ipsec.conf after '	left=YourGatewayIP'; local serverIP=$(ip addr|grep eth0$| awk '{ print $(2)}'|awk -F/ '{ print $1}'); sedIntoFile '        left=${serverIP}' /etc/ipsec.conf after '        left=YourServerIP'; sedIntoFile '        leftnexthop=${gatewayIP}' /etc/ipsec.conf after '        leftnexthop=YourGwIP'; catIntoFile $'${serverIP} %any: PSK "g:qLxF~c}</%qWU8AW_fIo|bkraGX{vnbaS{?&0S@dUi.!2UBVN\SgXU+!0tv*T:"' /etc/ipsec.secrets;"; # configure the /etc/ipsec.conf.;
+	ifYesDo "ipsec verify;"; # verify ipsec.;
+	ifYesDo "catIntoFile $'[global]\n ipsec saref = yes\n \n [lns default]\n ip range = 172.16.1.30-172.16.1.100\n local ip = 172.16.1.1\n refuse pap = yes\n require authentication = yes\n ppp debug = yes\n pppoptfile = /etc/ppp/options.xl2tpd\n length bit = yes' /etc/xl2tpd/xl2tpd.conf;"; # configure /etc/xl2tpd/xl2tpd.conf.;
+	ifYesDo "catIntoFile 'require-mschap-v2\n ms-dns 8.8.8.8\n ms-dns 8.8.4.4\n auth\n mtu 1200\n mru 1000\n crtscts\n hide-password\n modem\n name l2tpd\n proxyarp\n lcp-echo-interval 30\n lcp-echo-failure 4' /etc/ppp/options.xl2tpd;"; # configure /etc/ppp/options.xl2tpd.;
+	ifYesDo "catIntoFile 'test	l2tpd	vpn4testonly			*' /etc/ppp/chap-secrets;"; # configure /etc/ppp/chap-secretes to add user.;
+	ifYesDo "/etc/init.d/ipsec restart; /etc/init.d/xl2tpd restart;"; # configure /etc/ppp/chap-secretes to add user.;
+
+	#####################################################.;
+	## save the rules and set them to restore on reboot .;
+	#ifYesDo "iptables-save > /etc/iptables-rules"; # save iptables rules.;
+	#ifYesDo "catIntoFile $'#!/bin/sh\n iptables-restore < /etc/iptables-rules\nexit 0' /etc/network/if-pre-up.d/iptablesload; chmod +x /etc/network/if-pre-up.d/iptablesload;"; # create /etc/network/if-pre-up.d/iptablesload and make it excutable.;
+}
+setupl2tp;
