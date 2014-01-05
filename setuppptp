@@ -19,6 +19,6 @@ setuppptp(){
 	#####################################################.;
 	## save the rules and set them to restore on reboot .;
 	ifYesDo "iptables-save > /etc/iptables-rules"; # save iptables rules.;
-	ifYesDo "catIntoFile $'#!/bin/sh\n iptables-restore < /etc/iptables.rules\nexit 0' /etc/network/if-pre-up.d/iptablesload; chmod +x /etc/network/if-pre-up.d/iptablesload;"; # create /etc/network/if-pre-up.d/iptablesload and make it excutable.;
+	ifYesDo "catIntoFile $'#!/bin/sh\n iptables-restore < /etc/iptables-rules\nexit 0' /etc/network/if-pre-up.d/iptablesload; chmod +x /etc/network/if-pre-up.d/iptablesload;"; # create /etc/network/if-pre-up.d/iptablesload and make it excutable.;
 }
 setuppptp;
