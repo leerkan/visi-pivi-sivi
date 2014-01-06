@@ -95,7 +95,7 @@ sedIntoFile(){
 	local fileDir=${2};
 	local sedType=${3};
 	local refSentence=${4};
-echo "$refSentence";
+#echo "$refSentence";
 	mustBeExist ${fileDir};
 	if [ -w ${fileDir} ];
 	then
@@ -107,6 +107,7 @@ echo "$refSentence";
 			case ${sedType} in
 				""|a|after|AFTER) sed -i -e $"$ a ${sentences}" ${fileDir} ;;
 				b|before|BEFORE) sed -i -e $"$ i ${sentences}" ${fileDir} ;;
+				r|replace|REPLACE) sed -i -e $"/^.*$/ d" ${fileDir}&&echo ${sentences} > ${fileDir} ;;
 				*) return 2 ;;
 			esac
 		elif [ $# -ge 4 ];
@@ -114,6 +115,7 @@ echo "$refSentence";
 			case ${sedType} in
 				""|a|after|AFTER) sed -i -e $"/^${refSentence}$/ a ${sentences}" ${fileDir} ;;
 				b|before|BEFORE) sed -i -e $"/^${refSentence}$/ i ${sentences}" ${fileDir} ;;
+				r|replace|REPLACE) sed -i -e $"/^${refSentence}$/ c ${sentences}" ${fileDir} ;;
 				*) return 2 ;;
 			esac
 		else
