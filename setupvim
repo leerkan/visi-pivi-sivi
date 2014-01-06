@@ -9,6 +9,7 @@ setupvim(){
 	local fileDir="/etc/vim/vimrc.local";
 	local templateFileDir=${pffs_var_templateFolderName}"/etc.vim.vimrc.local";
 	ifYesDo "apt-get install  -y vim"; # install vim
-	ifYesDo "mustBeExist ${fileDir}; cp ${fileDir} ${fileDir}".bak"; cat ${templateFileDir} > ${fileDir}"; #set the ssh connection keeping alive.;
+	ifYesDo "mustBeExist ${fileDir}; cp ${fileDir} ${fileDir}".bak"; cat ${templateFileDir} > ${fileDir}"; # config vim.;
+	ifYesDo "git config core.editor vim"; # config editor for git;
 }
 setupvim;
