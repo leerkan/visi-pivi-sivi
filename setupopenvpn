@@ -55,6 +55,7 @@ a
 		ifYesDo "cp /etc/openvpn/easy-rsa/2.0/keys/${serverName}.key ."
 		ifYesDo "cp /etc/openvpn/easy-rsa/2.0/keys/dh1024.pem ."
 	}
+	setup_keys;
 	# END of setting up certification keys
 	# BEGIN to change the net protocol
 	change_net_protocol(){
