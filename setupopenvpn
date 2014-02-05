@@ -1,0 +1,83 @@
+#! /bin/bash -
+# auto setup openvpn on ubuntu
+LC_ALL=C
+# BEGIN Tool Functions
+. $(dirname $0)/pffs
+# END Tool Functions
+setupopenvpn(){
+	ifYesDo "catIntoFile $'nospoof on' /etc/host.conf"; # nospoof.;
+	ifYesDo "apt-get -y update"; # update.;
+
+	ifYesDo "if [ $(ls /dev/net) == 'tun' ]; then echo 'tun is ready'; else echo 'no'; mkdir /dev/net; mknod /dev/net/tun c 10 200; fi"; # make sure tun is ready.;
+
+	ifYesDo "apt-get install openvpn"; # install openvpn.;
+	ifYesDo "apt-get install gunzip"; # install gunzip;
+	ifYesDo "gunzip -c /usr/share/doc/openvpn/examples/sample-config-files/server.conf.gz > /etc/openvpn/server.conf; cp -r /usr/share/doc/openvpn/examples/easy-rsa/ /etc/openvpn/; cd /etc/openvpn/easy-rsa/2.0/; cp openssl-1.0.0.cnf openssl.cnf;" # config OpenVPN.
+
+	# BEGIN to modify /etc/openvpn/easy-rsa/2.0/vars
+	modify_vars(){
+		local varsDir="/etc/openvpn/easy-rsa/2.0/vars";
+		tail ${varsDir} -n 14
+		declare -A keys_ary=( [KEY_COUNTRY]="US" [KEY_PROVINCE]="CA" [KEY_CITY]="SanFrancisco" [KEY_ORG]="Fort-Funston" [KEY_EMAIL]="me@myhost.mydomain" [KEY_EMAIL]=mail@host.domain [KEY_CN]=changeme [KEY_NAME]=changeme [KEY_OU]=changeme [PKCS11_MODULE_PATH]=changeme [PKCS11_PIN]=1234 );
+		local key val;
+		for key in "${!keys_ary[@]}"
+		do
+			readNonBlankValue "${key}=" val ${keys_ary[$key]}
+			ifYesDo "sedIntoFile 'export ${key}=\""${val}"\"' ${varsDir}  replace 'export ${key}=.*'"
+		done;
+	}
+	modify_vars;
+	# END of modifing /etc/openvpn/easy-rsa/2.0/vars
+a	
+	# BEGIN to create certification keys
+	build_keys(){
+		ifYesDo "cd /etc/openvpn/easy-rsa/2.0/;" YES ;
+		ifYesDo "source vars;" YES ;
+		ifYesDo "./clean-all;" CAREFULLY ;
+		ifYesDo "./build-ca;" ;
+		local serverName=${1} ;
+		local server client ;
+		readNonBlankValue "./build-key-server with name :" server "server";
+		ifYesDo "./build-key-server ${server}";
+		eval ${serverName}="'${server}'" ;
+		readNonBlankValue "./build-key (client) with name :" client "client";
+		ifYesDo "./build-key ${client}";
+		ifYesDo "./build-dh";
+	}
+	build_keys serverName;
+	# END of creating certification keys
+	# BEGIN to set up certification keys
+	setup_keys(){
+		ifYesDo "cd /etc/openvpn; ls;" YES;
+		ifYesDo "cp /etc/openvpn/easy-rsa/2.0/keys/ca.crt ."
+		readNonBlankValue "./build-key-server with name :" serverName "${serverName}";
+		ifYesDo "cp /etc/openvpn/easy-rsa/2.0/keys/${serverName}.crt ."
+		ifYesDo "cp /etc/openvpn/easy-rsa/2.0/keys/${serverName}.key ."
+		ifYesDo "cp /etc/openvpn/easy-rsa/2.0/keys/dh1024.pem ."
+	}
+	# END of setting up certification keys
+	# BEGIN to change the net protocol
+	change_net_protocol(){
+		ifYesDo "sed -i 's/^port\.*/port 443/' /etc/openvpn/server.conf";
+		ifYesDo "sed -i 's/;proto tcp.*/proto tcp/' /etc/openvpn/server.conf";
+		ifYesDo "sed -i 's/.*proto udp.*/;proto udp/' /etc/openvpn/server.conf";
+		ifYesDo "sed -i 's/;push \"dhcp-option DNS 208.67.222.222\"/push \"dhcp-option DNS 208.67.222.222\"/' /etc/openvpn/server.conf";
+		ifYesDo "sed -i 's/;push \"dhcp-option DNS 208.67.220.220\"/push \"dhcp-option DNS 208.67.222.220\"/' /etc/openvpn/server.conf";
+		ifYesDo "sed -i 's/keepalive 10 120/keepalive 1000 12000/' /etc/openvpn/server.conf";
+		ifYesDo "sed -i 's/;push \"redirect-gateway.*/push \"redirect-gateway def1 bypass-dhcp\"/' /etc/openvpn/server.conf";
+	}
+	change_net_protocol;
+	# END of changing the net protocol
+	# BEGIN to restart openvpn service
+	ifYesDo "/etc/init.d/openvpn restart";
+	# END of restart openvpn service
+	# BEGIN to set the net config
+	ifYesDo "sedIntoFile 'net.ipv4.ip_forward=1' /etc/sysctl.conf after '#net.ipv4.ip_forward=1' ; sysctl -p ;"; # enable net.ipv4.ip_forward.;
+	ifYesDo "iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o venet0 -j SNAT --to-source `ifconfig venet0:0|grep inet|awk '{print $2}'|awk -F: '{print $2}'`";
+	#####################################################.;
+	## save the rules and set them to restore on reboot .;
+	ifYesDo "iptables-save > /etc/iptables-rules"; # save iptables rules.;
+	ifYesDo "catIntoFile $'#!/bin/sh\n iptables-restore < /etc/iptables-rules\nexit 0' /etc/network/if-pre-up.d/iptablesload; chmod +x /etc/network/if-pre-up.d/iptablesload;"; # create /etc/network/if-pre-up.d/iptablesload and make it excutable.;
+	# END of setting net config
+}
+setupopenvpn;

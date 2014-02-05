@@ -45,6 +45,33 @@ ifYesDo(){
 	esac
 }
 
+readNonBlankValue(){
+	# EXAMPLE:
+	# read non blank value into the second parameter which is given as 'country' here. The default value is US;
+	#	readNonBlankValue "KEY_CONTURY=" country "US";
+	local question=${1} ;
+	local answer=${2} ;
+	local defaultAnswer=${3} ;
+	local in ;
+	if [[ "${answer}" ]] ; then
+		echo -n "${question}" ;
+		while read in ;do 
+			case "${in}" in
+				"") if [[ "${defaultAnswer}" ]] ; then
+						eval ${answer}="'${defaultAnswer}'" ;
+						break;
+					else
+						echo "# Don't leave this field blank. " "${question}"; continue; ;;
+					fi;
+				*) eval ${answer}="'${in}'" ;
+					break ;;
+			esac
+		done;
+	else
+		echo "" ;
+	fi;
+}
+
 preDealDir(){
 	# resolve links - $0 may be a softlink
 	PRG="$0"
@@ -91,6 +118,14 @@ catIntoFile(){
 
 sedIntoFile(){
 	#sed sentences after specified words in specified file.
+	#EXAMPLE:
+	# replace a string in file.
+	#	local refSentence="export KEY_CITY=\"NY\"";
+	#	local sentences="export KEY_CITY=\"CD\"";
+	#	local fileDir="/home/will/tmp/testfile";
+	#	echo "${refSentence}" > ${fileDir};
+	#	sedIntoFile ${sentences} ${fileDir} replace "export KEY_CITY=.*" 
+	#
 	local sentences=${1};
 	local fileDir=${2};
 	local sedType=${3};
