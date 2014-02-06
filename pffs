@@ -61,8 +61,8 @@ readNonBlankValue(){
 						eval ${answer}="'${defaultAnswer}'" ;
 						break;
 					else
-						echo "# Don't leave this field blank. " "${question}"; continue; ;;
-					fi;
+						echo "# Don't leave this field blank. " "${question}"; break; 
+					fi ;;
 				*) eval ${answer}="'${in}'" ;
 					break ;;
 			esac
