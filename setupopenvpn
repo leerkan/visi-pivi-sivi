@@ -10,8 +10,8 @@ setupopenvpn(){
 
 	ifYesDo "if [ $(ls /dev/net) == 'tun' ]; then echo 'tun is ready'; else echo 'no'; mkdir /dev/net; mknod /dev/net/tun c 10 200; fi"; # make sure tun is ready.;
 
-	ifYesDo "apt-get install openvpn"; # install openvpn.;
-	ifYesDo "apt-get install gunzip"; # install gunzip;
+	ifYesDo "apt-get -y install openvpn"; # install openvpn.;
+	ifYesDo "apt-get -y install gunzip"; # install gunzip;
 	ifYesDo "gunzip -c /usr/share/doc/openvpn/examples/sample-config-files/server.conf.gz > /etc/openvpn/server.conf; cp -r /usr/share/doc/openvpn/examples/easy-rsa/ /etc/openvpn/; cd /etc/openvpn/easy-rsa/2.0/; cp openssl-1.0.0.cnf openssl.cnf;" # config OpenVPN.
 
 	# BEGIN to modify /etc/openvpn/easy-rsa/2.0/vars
