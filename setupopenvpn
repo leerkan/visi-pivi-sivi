@@ -83,12 +83,23 @@ a
 	ifYesDo "/etc/init.d/openvpn restart";
 	# END of restart openvpn service
 	# BEGIN to set the net config
-	ifYesDo "sedIntoFile 'net.ipv4.ip_forward=1' /etc/sysctl.conf after '#net.ipv4.ip_forward=1' ; sysctl -p ;"; # enable net.ipv4.ip_forward.;
-	ifYesDo "iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o venet0 -j SNAT --to-source `ifconfig venet0:0|grep inet|awk '{print $2}'|awk -F: '{print $2}'`";
-	#####################################################.;
-	## save the rules and set them to restore on reboot .;
-	ifYesDo "iptables-save > /etc/iptables-rules"; # save iptables rules.;
-	ifYesDo "catIntoFile $'#!/bin/sh\n iptables-restore < /etc/iptables-rules\nexit 0' /etc/network/if-pre-up.d/iptablesload; chmod +x /etc/network/if-pre-up.d/iptablesload;"; # create /etc/network/if-pre-up.d/iptablesload and make it excutable.;
+	set_net_config(){
+		ifYesDo "sedIntoFile 'net.ipv4.ip_forward=1' /etc/sysctl.conf after '#net.ipv4.ip_forward=1' ; sysctl -p ;"; # enable net.ipv4.ip_forward.;
+		local has_venet0=$(ifconfig | grep venet0);
+		local has_eth0=$(ifconfig | grep eth0);
+		if [ "${has_venet0}" != "" ] ; then
+			ifYesDo "iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o venet0 -j SNAT --to-source \`ifconfig venet0:0|grep inet|awk '{print \$2}'|awk -F: '{print \$2}'\`";
+		elif [ "${has_eth0}" != "" ] ; then
+			ifYesDo "iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j SNAT --to-source \`ifconfig eth0|grep inet|awk '{print \$2}'|awk -F: '{print \$2}'\`";
+		else
+			ifYesDo "ifconfig" NOT_FOUND_NET_INTERFACE "Please manually excute  \"iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j SNAT --to-source \`ifconfig eth0|grep inet|awk '{print \$2}'|awk -F: '{print \$2}'\`\" WITH \"eth0\" BEEN REPLACED WITH RIGHT NAME."
+		fi ;
+		#####################################################.;
+		## save the rules and set them to restore on reboot .;
+		ifYesDo "iptables-save > /etc/iptables-rules"; # save iptables rules.;
+		ifYesDo "catIntoFile $'#!/bin/sh\n iptables-restore < /etc/iptables-rules\nexit 0' /etc/network/if-pre-up.d/iptablesload; chmod +x /etc/network/if-pre-up.d/iptablesload;"; # create /etc/network/if-pre-up.d/iptablesload and make it excutable.;
+	}
+	set_net_config;
 	# END of setting net config
 }
 setupopenvpn;
