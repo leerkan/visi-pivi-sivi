@@ -72,8 +72,8 @@ a
 	# BEGIN to secure the data
 	secure_data(){
 		ifYesDo "openvpn --genkey --secret ta.key";
-		ifYesDo "sedIntoFile \"tls-auth ta.key 0 # This file is secret\" /etc/openvpn/server.conf replace \";tls-auth ta.key 0 # This file is secret\";
-		ifYesDo "sedIntoFile \"cipher AES-128-CBC #AES\" /etc/openvpn/server.conf replace \";cipher AES-128-CBC   # AES\"";
+		ifYesDo "sedIntoFile \"tls-auth ta.key 0 \# This file is secret\" /etc/openvpn/server.conf replace \";tls-auth ta.key 0 \# This file is secret\"";
+		ifYesDo "sedIntoFile \"cipher AES-128-CBC \#AES\" /etc/openvpn/server.conf replace \";cipher AES-128-CBC   \# AES\"";
 		ifYesDo "sedIntoFile \"user nobody\" /etc/openvpn/server.conf replace \";user nobody\"";
 		ifYesDo "sedIntoFile \"group nogroup\" /etc/openvpn/server.conf replace \";group nogroup\"";
 	}
