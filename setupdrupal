@@ -1,0 +1,14 @@
+#! /bin/bash -
+# auto setup drupal on ubuntu
+LC_ALL=C
+# BEGIN Tool Functions
+. $(dirname $0)/pffs
+# END Tool Functions
+
+setupdrupal(){
+	ifYesDo "apt-get -y install drupal7"; # setup drupal7
+	ifYesDo "sedIntoFile \"  php_value session.cookie_secure 1\" /etc/drupal/7/htaccess after \"  php_value mbstring.http_output            pass\""
+	ifYesDo "service apache2 reload"; # rescan /etc/php5/apache2/conf.d
+	ifYesDo "ln -s /etc/drupal/ /var/www/drupal" # set drupal available
+}
+setupdrupal;
