@@ -27,6 +27,7 @@ setupdrupal(){
 	local Tmp_File_Path="/tmp/setupdrupalmysqlsql";
 	ifYesDo "readNonBlankValue $'MySQL Root User Name (${MySQL_Root_Name}):' MySQL_Root_Name $'${MySQL_Root_Name}'; readNonBlankValue \${MySQL_Root_Name}$'\\'s password:' MySQL_Root_Password '' 'echooff'; readNonBlankValue $'Drupal\\'s Database Name (${Drupal_Database_Name}):' Drupal_Database_Name '${Drupal_Database_Name}'; readNonBlankValue $'Drupal\\'s DB_User Name (${Drupal_DB_User_Name}):' Drupal_DB_User_Name '${Drupal_DB_User_Name}'; readNonBlankValue \${Drupal_DB_User_Name}$'\\'s password:' Drupal_DB_User_Password '' 'echooff';    catIntoFile $'CREATE DATABASE '\${Drupal_Database_Name}$'; CREATE USER '\${Drupal_DB_User_Name}$'@localhost;  SET PASSWORD FOR '\${Drupal_DB_User_Name}$'@localhost= PASSWORD(\"'\${Drupal_DB_User_Password}$'\"); GRANT ALL PRIVILEGES ON '\${Drupal_Database_Name}$'.* TO '\${Drupal_DB_User_Name}$'@localhost IDENTIFIED BY \''\${Drupal_DB_User_Password}$'\'; FLUSH PRIVILEGES;' ${Tmp_File_Path}; echo \"Password for mysql root is needed.\"; mysql --user \$MySQL_Root_Name --password < ${Tmp_File_Path}"; # set mysql.;
 	ifYesDo "apt-get install php5-gd;"; # install php5r-gd.;
+	ifYesDo "service apache2 reload;"; # install php5r-gd.;
 	echo "Now please visit the install.php from web browser to continue.";
 	sleep 2;
 }
