@@ -10,8 +10,8 @@ setupopenvpn(){
 
 	ifYesDo "if [ $(ls /dev/net) == 'tun' ]; then echo 'tun is ready'; else echo 'no'; mkdir /dev/net; mknod /dev/net/tun c 10 200; fi"; # make sure tun is ready.;
 
-	ifYesDo "apt-get install openvpn"; # install openvpn.;
-	ifYesDo "apt-get install gunzip"; # install gunzip;
+	ifYesDo "apt-get -y install openvpn"; # install openvpn.;
+	ifYesDo "apt-get -y install gunzip"; # install gunzip;
 	ifYesDo "gunzip -c /usr/share/doc/openvpn/examples/sample-config-files/server.conf.gz > /etc/openvpn/server.conf; cp -r /usr/share/doc/openvpn/examples/easy-rsa/ /etc/openvpn/; cd /etc/openvpn/easy-rsa/2.0/; cp openssl-1.0.0.cnf openssl.cnf;" # config OpenVPN.
 
 	# BEGIN to modify /etc/openvpn/easy-rsa/2.0/vars
@@ -59,7 +59,7 @@ a
 	# END of setting up certification keys
 	# BEGIN to change the net protocol
 	change_net_protocol(){
-		ifYesDo "sed -i 's/^port\.*/port 443/' /etc/openvpn/server.conf";
+		ifYesDo "sed -i 's/^port\ .*/port 443/' /etc/openvpn/server.conf";
 		ifYesDo "sed -i 's/;proto tcp.*/proto tcp/' /etc/openvpn/server.conf";
 		ifYesDo "sed -i 's/.*proto udp.*/;proto udp/' /etc/openvpn/server.conf";
 		ifYesDo "sed -i 's/;push \"dhcp-option DNS 208.67.222.222\"/push \"dhcp-option DNS 208.67.222.222\"/' /etc/openvpn/server.conf";
@@ -69,16 +69,37 @@ a
 	}
 	change_net_protocol;
 	# END of changing the net protocol
+	# BEGIN to secure the data
+	secure_data(){
+		ifYesDo "openvpn --genkey --secret ta.key";
+		ifYesDo "sedIntoFile \"tls-auth ta.key 0 \# This file is secret\" /etc/openvpn/server.conf replace \";tls-auth ta.key 0 \# This file is secret\"";
+		ifYesDo "sedIntoFile \"cipher AES-128-CBC \#AES\" /etc/openvpn/server.conf replace \";cipher AES-128-CBC   \# AES\"";
+		ifYesDo "sedIntoFile \"user nobody\" /etc/openvpn/server.conf replace \";user nobody\"";
+		ifYesDo "sedIntoFile \"group nogroup\" /etc/openvpn/server.conf replace \";group nogroup\"";
+	}
+	secure_data;
+	# END of securing the data
 	# BEGIN to restart openvpn service
 	ifYesDo "/etc/init.d/openvpn restart";
 	# END of restart openvpn service
 	# BEGIN to set the net config
-	ifYesDo "sedIntoFile 'net.ipv4.ip_forward=1' /etc/sysctl.conf after '#net.ipv4.ip_forward=1' ; sysctl -p ;"; # enable net.ipv4.ip_forward.;
-	ifYesDo "iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o venet0 -j SNAT --to-source `ifconfig venet0:0|grep inet|awk '{print $2}'|awk -F: '{print $2}'`";
-	#####################################################.;
-	## save the rules and set them to restore on reboot .;
-	ifYesDo "iptables-save > /etc/iptables-rules"; # save iptables rules.;
-	ifYesDo "catIntoFile $'#!/bin/sh\n iptables-restore < /etc/iptables-rules\nexit 0' /etc/network/if-pre-up.d/iptablesload; chmod +x /etc/network/if-pre-up.d/iptablesload;"; # create /etc/network/if-pre-up.d/iptablesload and make it excutable.;
+	set_net_config(){
+		ifYesDo "sedIntoFile 'net.ipv4.ip_forward=1' /etc/sysctl.conf after '#net.ipv4.ip_forward=1' ; sysctl -p ;"; # enable net.ipv4.ip_forward.;
+		local has_venet0=$(ifconfig | grep venet0);
+		local has_eth0=$(ifconfig | grep eth0);
+		if [ "${has_venet0}" != "" ] ; then
+			ifYesDo "iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o venet0 -j SNAT --to-source \`ifconfig venet0:0|grep inet|awk '{print \$2}'|awk -F: '{print \$2}'\`";
+		elif [ "${has_eth0}" != "" ] ; then
+			ifYesDo "iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j SNAT --to-source \`ifconfig eth0|grep inet|awk '{print \$2}'|awk -F: '{print \$2}'\`";
+		else
+			ifYesDo "ifconfig" NOT_FOUND_NET_INTERFACE "Please manually excute  \"iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j SNAT --to-source \`ifconfig eth0|grep inet|awk '{print \$2}'|awk -F: '{print \$2}'\`\" WITH \"eth0\" BEEN REPLACED WITH RIGHT NAME."
+		fi ;
+		#####################################################.;
+		## save the rules and set them to restore on reboot .;
+		ifYesDo "iptables-save > /etc/iptables-rules"; # save iptables rules.;
+		ifYesDo "catIntoFile $'#!/bin/sh\n iptables-restore < /etc/iptables-rules\nexit 0' /etc/network/if-pre-up.d/iptablesload; chmod +x /etc/network/if-pre-up.d/iptablesload;"; # create /etc/network/if-pre-up.d/iptablesload and make it excutable.;
+	}
+	set_net_config;
 	# END of setting net config
 }
 setupopenvpn;

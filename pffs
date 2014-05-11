@@ -52,21 +52,39 @@ readNonBlankValue(){
 	local question=${1} ;
 	local answer=${2} ;
 	local defaultAnswer=${3} ;
+	local echooff=${4} ;
 	local in ;
 	if [[ "${answer}" ]] ; then
 		echo -n "${question}" ;
+		if [[ "${echooff}" ]] ; then
+			stty -echo;
+		fi;
 		while read in ;do 
+			if [[ "${echooff}" ]] ; then
+				stty echo;
+			fi;
 			case "${in}" in
 				"") if [[ "${defaultAnswer}" ]] ; then
 						eval ${answer}="'${defaultAnswer}'" ;
 						break;
 					else
-						echo "# Don't leave this field blank. " "${question}"; continue; ;;
-					fi;
+						echo "";
+						echo "# Don't leave this field blank. " "${question}"; 
+						if [[ "${echooff}" ]] ; then
+							stty -echo;
+						fi;
+						continue;
+					fi ;;
 				*) eval ${answer}="'${in}'" ;
 					break ;;
 			esac
+			if [[ "${echooff}" ]] ; then
+				stty -echo;
+			fi;
 		done;
+		if [[ "${echooff}" ]] ; then
+			stty echo;
+		fi;
 	else
 		echo "" ;
 	fi;

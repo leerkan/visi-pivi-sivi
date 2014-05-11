@@ -1,0 +1,34 @@
+#! /bin/bash -
+# auto setup drupal on ubuntu
+LC_ALL=C
+# BEGIN Tool Functions
+. $(dirname $0)/pffs
+# END Tool Functions
+
+setupdrupal(){
+	echo "Please make sure you are on a LAMP(ready) server before excute the follow command."; # TIPs.;
+	sleep 7;
+	ifYesDo "exit" "" "Stop?";
+	ifYesDo "cd /tmp/"; # mv to tmp for incoming downloading.
+	local Drupal_downloading_URL="http://ftp.drupal.org/files/projects/drupal-7.26.tar.gz";
+	local Extract_dir="/var/www/";
+	local Extract_name="drupal7_26";
+	local Drupal_name=$(basename ${Drupal_downloading_URL});
+	ifYesDo "readNonBlankValue $'Please provide the downloading URL of Drupal (${Drupal_downloading_URL}):' Drupal_downloading_URL $'${Drupal_downloading_URL}';Drupal_name=\$(basename \${Drupal_downloading_URL});"; # set downloading URL .set Drupal name according to Drupal downloading URL.;
+	ifYesDo "wget \${Drupal_downloading_URL};"; # Download drupal.;
+	ifYesDo "readNonBlankValue $'Extract (${Drupal_name}):' Drupal_name $'${Drupal_name}'; readNonBlankValue $'Extract as (${Extract_name}):' Extract_name '${Extract_name}'; readNonBlankValue $'Extract to (${Extract_dir}):' Extract_dir '${Extract_dir}';"; # set folder name and direction for the following extractation.;
+	ifYesDo "mkdir -p \${Extract_dir}\${Extract_name}; tar -C \${Extract_dir}\${Extract_name} -zxf \${Drupal_name} --strip-components=1"; # Extract Drupal to destination.;
+	ifYesDo "cd $Extract_dir$Extract_name; cp sites/default/default.settings.php sites/default/settings.php; chmod a+w sites/default/settings.php; chmod a+w sites/default;"; # configure the settings .;
+	local MySQL_Root_Name="root";
+	local MySQL_Root_Password="";
+	local Drupal_Database_Name="${Extract_name}";
+	local Drupal_DB_User_Name="${Drupal_Database_Name}";
+	local Drupal_DB_User_Password="";
+	local Tmp_File_Path="/tmp/setupdrupalmysqlsql";
+	ifYesDo "readNonBlankValue $'MySQL Root User Name (${MySQL_Root_Name}):' MySQL_Root_Name $'${MySQL_Root_Name}'; readNonBlankValue \${MySQL_Root_Name}$'\\'s password:' MySQL_Root_Password '' 'echooff'; readNonBlankValue $'Drupal\\'s Database Name (${Drupal_Database_Name}):' Drupal_Database_Name '${Drupal_Database_Name}'; readNonBlankValue $'Drupal\\'s DB_User Name (${Drupal_DB_User_Name}):' Drupal_DB_User_Name '${Drupal_DB_User_Name}'; readNonBlankValue \${Drupal_DB_User_Name}$'\\'s password:' Drupal_DB_User_Password '' 'echooff';    catIntoFile $'CREATE DATABASE '\${Drupal_Database_Name}$'; CREATE USER '\${Drupal_DB_User_Name}$'@localhost;  SET PASSWORD FOR '\${Drupal_DB_User_Name}$'@localhost= PASSWORD(\"'\${Drupal_DB_User_Password}$'\"); GRANT ALL PRIVILEGES ON '\${Drupal_Database_Name}$'.* TO '\${Drupal_DB_User_Name}$'@localhost IDENTIFIED BY \''\${Drupal_DB_User_Password}$'\'; FLUSH PRIVILEGES;' ${Tmp_File_Path}; echo \"Password for mysql root is needed.\"; mysql --user \$MySQL_Root_Name --password < ${Tmp_File_Path}"; # set mysql.;
+	ifYesDo "apt-get install php5-gd;"; # install php5r-gd.;
+	ifYesDo "service apache2 reload;"; # install php5r-gd.;
+	echo "Now please visit the install.php from web browser to continue.";
+	sleep 2;
+}
+setupdrupal;
