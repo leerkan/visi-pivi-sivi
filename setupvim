@@ -22,10 +22,10 @@ setupvim(){
 	ifYesDo "npm install jshint && ln -s ~/node_modules/jshint/bin/jshint ~/bin/" "" "install jshint locally AND link it to ~/bin .";
 	#local jshintLinkName=$(cat ~/node_modules/jshint/package.json|grep ^\ \ \"name\"\:|cut -f 4- -d " "| cut -f 2 -d "\"");
 	local jsBeautifyFolderName="js-beautify";
-	local templateJsBeautifyFolderDir=${pffs_var_templateFolderName}"/usr.share.vim.plugin.js-beautify/";
+	local templateJsBeautifyFolderDir=${pffs_var_templateFolderName}"/usr.share.vim.vim${vimVersion/./}.plugin.js-beautify";
 	local vimJsBeautifyFolderName="vim-jsbeautify";
-	local templateVIMJsBeautifyFolderDir=${pffs_var_templateFolderName}"/usr.share.vim.plugin.vim-jsbeautify/"
-	ifYesDo "mkdir ${vimPluginFolderDir}${jsBeautifyFolderName} && cp -R ${templateJsBeautifyFolderDir}/* ${vimPluginFolderDir}${jsBeautifyFolderName} && mkdir ${vimPluginFolderDir}${vimJsBeautifyFolderName} && cp -R ${templateVIMJsBeautifyFolderDir}/* ${vimPluginFolderDir}${vimJsBeautifyFolderName} && ln -s ${vimPluginFolderDir}${jsBeautifyFolderName} ${vimPluginFolderDir}${vimJsBeautifyFolderName}/lib" "" "Deploy js-beautify and vim-jsbeautify to vim plugin folder."; # delpoy vim-js-beautify plugin;
+	local templateVIMJsBeautifyFolderDir=${pffs_var_templateFolderName}"/usr.share.vim.vim${vimVersion/./}.plugin.vim-jsbeautify"
+	ifYesDo "mkdir -p ${vimPluginFolderDir}${jsBeautifyFolderName} && cp -R ${templateJsBeautifyFolderDir}/* ${vimPluginFolderDir}${jsBeautifyFolderName} && mkdir -p ${vimPluginFolderDir}${vimJsBeautifyFolderName} && cp -R ${templateVIMJsBeautifyFolderDir}/* ${vimPluginFolderDir}${vimJsBeautifyFolderName} && ln -s ${vimPluginFolderDir}${jsBeautifyFolderName} ${vimPluginFolderDir}${vimJsBeautifyFolderName}/lib" "" "Deploy js-beautify and vim-jsbeautify to vim plugin folder."; # delpoy vim-js-beautify plugin;
 	ifYesDo "sedIntoFile 'tab' ${vimPluginFolderDir}${vimJsBeautifyFolderName}/.editorconfig replace 'space'" "" "Use tab instead of space in JsBeautify."; # reconfig vim-jsbeautify.;
 }
 setupvim;
