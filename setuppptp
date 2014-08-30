@@ -14,6 +14,7 @@ setuppptp(){
 	ifYesDo "service pptpd restart"; # restart pptpd.;
 	ifYesDo "sedIntoFile 'net.ipv4.ip_forward=1' /etc/sysctl.conf after '#net.ipv4.ip_forward=1' ; sysctl -p ;"; # enable net.ipv4.ip_forward.;
 	ifYesDo "iptables --table nat --append POSTROUTING --out-interface ppp0 --jump MASQUERADE"; # create nat rule for iptables.;
+	ifYesDo "iptables --table nat --append POSTROUTING --out-interface eth0 --jump MASQUERADE"; # create nat rule for iptables, if eth0 is exist, we may need this.;
 	ifYesDo "iptables -I FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu"; # solve a problem with MTU size variations.;
 	ifYesDo "iptables -I FORWARD -i ppp+ -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK SYN -j TCPMSS --set-mss 1356"; # solve the problem that the mtu of ppp is smaller than eth has.;
 	#####################################################.;
