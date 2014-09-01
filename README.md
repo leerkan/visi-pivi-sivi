@@ -7,7 +7,7 @@ This project provides good user interative experience. User can choose to excute
 Normally, we use in this order:
 
 - [x] #bash addSudoUser
-- [x] #bash setupvim
+- [x] #bash setupvim  # includes vim color scheme for javascript.
 - [x] #bash setupssh
 - [x] #bash setupvpnserver
 	- [ ] ~~~#bash setupopenvpn~~~
