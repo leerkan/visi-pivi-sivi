@@ -15,7 +15,7 @@ Normally, we use in this order:
 - [ ] #bash setuplamp
 	- [ ] #bash setupdrupal
 
-And You are welcome to extends this project with respect.
+And You are welcome to extend this project with respect.
 
 ==============
 <h4>README.md markdown syntax.</h4>
