@@ -2,7 +2,7 @@
 " vim: tw=0 ts=4 sw=4
 " Vim color file
 "%% leerkan Vim color file
-" Leerkan Maintainer: dear.lrk@outlook.com
+" Leerkan Maintainer: lrk <dear.lrk@outlook.com>
 " Last Change:	2013 Sep 1
 " (originally looked at desert Hans Fugal <hans@fugal.net> http://hans.fugal.net/vim/colors/desert.vim (2003/05/06)
 " (originally looked at Slate.vim Ralph Amissah <ralph@amissah.com> and koehler.vim  Ron Aaron <ron@ronware.org>)
