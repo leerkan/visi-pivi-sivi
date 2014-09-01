@@ -1,11 +1,65 @@
 #! /bin/bash -
-# these public functions for shell.
-# by using ../pffs to source it to current shell environment to call.
+### BEGIN INIT INFO
+# Provides:          pffs
+# Required-Start:    
+# Required-Stop:     
+# Should-Start:      
+# Should-Stop:       
+# X-Start-Before:    $x-display-manager gdm kdm xdm wdm ldm sdm nodm
+# X-Interactive:     true
+# Default-Start:     
+# Default-Stop:      0 1 2 3 4 5 6
+# Short-Description: public functions for shell
+# Descrioption:      These are public functions for shell.
+#                    by using ../pffs to source it to current shell
+#                     environment to call.
+### END INIT INFO
+
+### Original version by Leerkan
+# <d.lrk@outlook.com>, edited by Leerkan
+### Modified for [what] by [who] [<email address>]
+
 setGlobalVariable(){
+	### BEGIN INIT INFO
+	# Provides:          pffs global variable
+	# Required-Start:    
+	# Required-Stop:     
+	# Should-Start:      
+	# Should-Stop:       
+	# X-Start-Before:    $x-display-manager gdm kdm xdm wdm ldm sdm nodm
+	# X-Interactive:     true
+	# Default-Start:     
+	# Default-Stop:      0 1 2 3 4 5 6
+	# Short-Description: set pffs's global variable.
+	# Descrioption:      set pffs's global variable. So all the scripts
+	#                     can use it.
+	### END INIT INFO
+
+	### Original version by Leerkan
+	# <d.lrk@outlook.com>, edited by Leerkan
+	### Modified for [what] by [who] [<email address>]
 	pffs_var_templateFolderName="template";
 }
 setGlobalVariable;
 formatStringToReg(){
+	### BEGIN INIT INFO
+	# Provides:          format the string that will be send to RegExp.
+	# Required-Start:    
+	# Required-Stop:     
+	# Should-Start:      
+	# Should-Stop:       
+	# X-Start-Before:    $x-display-manager gdm kdm xdm wdm ldm sdm nodm
+	# X-Interactive:     true
+	# Default-Start:     
+	# Default-Stop:      0 1 2 3 4 5 6
+	# Short-Description: format the string that will be send to RegExp.
+	# Descrioption:      format the string that will be send to RegExp.
+	#                    To make sure the RegExp will work well 
+	### END INIT INFO
+
+	### Original version by Leerkan
+	# <d.lrk@outlook.com>, edited by Leerkan
+	### Modified for [what] by [who] [<email address>]
 	s="$1";
 	#s=${s//\ /\\\ }
 	s=${s//\//\\\/}
@@ -16,11 +70,30 @@ formatStringToReg(){
 }
 
 ifYesDo(){
-	# ifYesDo "echo abc" will ask before eval "echo abc".
-	# with an answer q , the script will be executed quietly.
-	# or you can give the q to the second argument.eg. ifYesDo "echo abc" q.
-	# with a third argument to call ifYesDo, it will ask with the 3rd argument instead of the 1st argument, which will be executed.
-	#eg. ifYesDo "echo Hello World" "" "Do you want to echo hello world?" ;
+	### BEGIN INIT INFO
+	# Provides:          Ask Before Processing Interative Service.
+	# Required-Start:    
+	# Required-Stop:     
+	# Should-Start:      
+	# Should-Stop:       
+	# X-Start-Before:    $x-display-manager gdm kdm xdm wdm ldm sdm nodm
+	# X-Interactive:     true
+	# Default-Start:     
+	# Default-Stop:      0 1 2 3 4 5 6
+	# Short-Description: Ask Before Processing Interative Service.
+	# Descrioption:      Ask Before Processing Interative Service.
+	#                    ifYesDo "echo abc" will ask before eval "echo abc".
+	#                    with an answer q , the script will be executed quietly.
+	#                    or you can give the q to the second argument.eg. ifYesDo "echo abc" q.
+	#                    with a third argument to call ifYesDo,
+	#                     it will ask with the 3rd argument instead of the 1st argument,
+	#                     which will be executed.
+	#                    eg. ifYesDo "echo Hello World" "" "Do you want to echo hello world?" ;
+	### END INIT INFO
+
+	### Original version by Leerkan
+	# <d.lrk@outlook.com>, edited by Leerkan
+	### Modified for [what] by [who] [<email address>]
 	local script=${1};
 	local defaultAnswer=${2}
 	local comment=${3};
@@ -46,9 +119,30 @@ ifYesDo(){
 }
 
 readNonBlankValue(){
-	# EXAMPLE:
-	# read non blank value into the second parameter which is given as 'country' here. The default value is US;
-	#	readNonBlankValue "KEY_CONTURY=" country "US";
+	### BEGIN INIT INFO
+	# Provides:         Read Non-blank Value. 
+	# Required-Start:    
+	# Required-Stop:     
+	# Should-Start:      
+	# Should-Stop:       
+	# X-Start-Before:    $x-display-manager gdm kdm xdm wdm ldm sdm nodm
+	# X-Interactive:     true
+	# Default-Start:     
+	# Default-Stop:      0 1 2 3 4 5 6
+	# Short-Description: Ask Before Processing Interative Service.
+	# Descrioption:      Ask Before Processing Interative Service.
+	#                    EXAMPLE:
+	#                    read non blank value into the second parameter
+	#                     which is given as 'country' here.
+	#                     The default value is US;
+	#                        readNonBlankValue "KEY_CONTURY=" country "US";
+	#                    If there's default value.
+	#                    Then default value will be taken.
+	### END INIT INFO
+
+	### Original version by Leerkan
+	# <d.lrk@outlook.com>, edited by Leerkan
+	### Modified for [what] by [who] [<email address>]
 	local question=${1} ;
 	local answer=${2} ;
 	local defaultAnswer=${3} ;
@@ -91,7 +185,24 @@ readNonBlankValue(){
 }
 
 preDealDir(){
-	# resolve links - $0 may be a softlink
+	### BEGIN INIT INFO
+	# Provides:         pre-deal the string of directory. 
+	# Required-Start:    
+	# Required-Stop:     
+	# Should-Start:      
+	# Should-Stop:       
+	# X-Start-Before:    $x-display-manager gdm kdm xdm wdm ldm sdm nodm
+	# X-Interactive:     true
+	# Default-Start:     
+	# Default-Stop:      0 1 2 3 4 5 6
+	# Short-Description: pre-deal the string of directory.
+	# Descrioption:      pre-deal the string of directory.
+	#                    resolve links - $0 may be a softlink
+	### END INIT INFO
+
+	### Original version by Hugo
+	# <photography.hugohallman.com>, edited by Leerkan
+	### Modified for [what] by [who] [<email address>]
 	PRG="$0"
 	while [ -h "$PRG" ] ; do
 	  ls=`ls -ld "$PRG"`
