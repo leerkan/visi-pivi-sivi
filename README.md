@@ -1,4 +1,4 @@
-visi-pivi-sivi
+visi-pivi-sivi - PI6 - DOCUMENT IN SCRIPT.
 ==============
 This is the project found as a convenience for ubuntu server user to configure their server.
 
