@@ -89,6 +89,9 @@ ifYesDo(){
 	#                     it will ask with the 3rd argument instead of the 1st argument,
 	#                     which will be executed.
 	#                    eg. ifYesDo "echo Hello World" "" "Do you want to echo hello world?" ;
+	#                    With a forth argument to call ifYesDo,
+	#                     it will provide more explanation, if user choose "m".
+	#                   eg.  ifYesDo "catIntoFile $'\n	TCPKeepAlive yes\n	ServerAliveInterval 120' /etc/ssh/ssh_config" "" "set the ssh connection keeping alive." "To avoid to be disconnected, if the client not active for a short time."; #set the ssh connection keeping alive.;
 	### END INIT INFO
 
 	### Original version by Leerkan
@@ -96,10 +99,12 @@ ifYesDo(){
 	### Modified for [what] by [who] [<email address>]
 	local script=${1};
 	local defaultAnswer=${2}
-	local comment=${3};
-	case "${comment}" in
+	local explanation=${3};
+	local moreExplanation=${4};
+	local messageOfPlsChoose="press 'yes' or 'no'. for more info, try [s/e/m]:";
+	case "${explanation}" in
 		"") echo -n "${script}" "[y/n]:" ;;
-		*) echo -n "${comment}" "[y/n]:" ;;
+		*) echo -n "${explanation}" "[y/n]:" ;;
 	esac
 	case ${defaultAnswer} in
 		y|Y|yes|Yes|q|Q|quiet|QUIET|n|N|no|NO) in=${defaultAnswer};
@@ -107,7 +112,10 @@ ifYesDo(){
 		*) while read in ;do 
 			case "${in}" in
 				y|Y|yes|Yes|q|Q|quiet|QUIET|n|N|no|NO) break ;;
-				*) echo -n "press 'yes' or 'no':" ;;
+				s|S|script|Script) echo " "${script}; echo -n " "${messageOfPlsChoose} ;;
+				e|E|explanation|Explanation) echo " "${explanation}; echo -n " "${messageOfPlsChoose} ;;
+				m|M|more|More|MoreExplanation) echo " "${moreExplanation}; echo -n " "${messageOfPlsChoose} ;;
+				*) echo -n " "${messageOfPlsChoose} ;;
 			esac
 		done;
 	esac
