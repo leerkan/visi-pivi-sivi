@@ -1,4 +1,4 @@
-visi-pivi-sivi
+visi-pivi-sivi - PI6 - DOCUMENT IN SCRIPT.
 ==============
 This is the project found as a convenience for ubuntu server user to configure their server.
 
@@ -17,6 +17,8 @@ Normally, we use in this order:
 
 And You are welcome to extend this project with respect.
 
+Usage Example for setupssh:
+![Usage Example for setupssh](https://github.com/visi-pivi-sivi/PI6-doc/blob/master/images/UageExample4Setupssh.gif)
 ==============
 <h4>README.md markdown syntax.</h4>
 
