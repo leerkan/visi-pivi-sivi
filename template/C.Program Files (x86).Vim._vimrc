@@ -28,6 +28,8 @@ function MyDiff()
   silent execute '!' . cmd . ' ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3 . eq
 endfunction
 
-if filereadable($VIMRUNTIME . '/../gvimrc.local')
-  source $VIMRUNTIME/../gvimrc.local
+if has("gui_running")
+	if filereadable($VIMRUNTIME . '/../gvimrc.local')
+	  source $VIMRUNTIME/../gvimrc.local
+	endif
 endif
