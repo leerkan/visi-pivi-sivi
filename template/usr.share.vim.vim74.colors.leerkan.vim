@@ -1,1 +1,1 @@
-template/usr.share.vim.vim73.colors.leerkan.vim
+usr.share.vim.vim73.colors.leerkan.vim

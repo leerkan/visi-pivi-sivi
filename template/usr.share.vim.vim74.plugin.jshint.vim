@@ -1,1 +1,1 @@
-template/usr.share.vim.vim73.plugin.jshint.vim
+usr.share.vim.vim73.plugin.jshint.vim
