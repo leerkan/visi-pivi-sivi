@@ -1,13 +1,13 @@
 visi-pivi-sivi - PI6 - DOCUMENT IN SCRIPT.
 ==============
-This is the project found as a convenience for ubuntu server user to configure their server.
+This is the project found as a convenience for Ubuntu server user to configure their server.
 
-This project provides good user interative experience. User can choose to excute every step. They can also read comments/explanations for each step.
+This project provides good user interactive experience. User can choose to execute every step. They can also read comments/explanations for each step.
 
 Normally, we use in this order:
 
 - [x] #bash addSudoUser
-- [x] #bash setupvim  # includes vim color scheme for javascript.
+- [x] #bash setupvim  # includes vim colour scheme for JavaScript.
 - [x] #bash setupssh
 - [x] #bash setupvpnserver
 	- [ ] ~~~#bash setupopenvpn~~~
