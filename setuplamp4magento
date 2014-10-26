@@ -1,0 +1,19 @@
+#! /bin/bash -
+# auto setup LAMP on ubuntu
+LC_ALL=C
+# BEGIN Tool Functions
+. $(dirname $0)/pffs
+# END Tool Functions
+setuplamp4magento(){
+	ifYesDo "apt-get install apache2" "" "Install Apache";
+	ifYesDo "apt-get install php5" "" "Install PHP";
+	ifYesDo "apt-get install  mysql-server" "" "Install MySQL server";
+	ifYesDo "apt-get install php5-mysql php5-curl php5-gd php-pear" "" "Install the required PHP extensions that Magento uses" "such as the MySQL bridge"
+
+#	ifYesDo "apt-get install mysql-server libapache2-mod-auth-mysql php5-mysql && mysql_install_db && /usr/bin/mysql_secure_installation"; # Install MySQL.;
+#	ifYesDo "apt-get install php5 libapache2-mod-php5 php5-mcrypt"; # Install PHP.;
+#	ifYesDo "sedIntoFile \"\ \ \ \ \ \ \ \ \ \ DirectoryIndex index.php index.html index.cgi index.pl index.xhtml index.htm\" /etc/apache2/mods-enabled/dir.conf replace \"          DirectoryIndex index.html index.cgi index.pl index.php index.xhtml index.htm\""; # Add index.php to the beginning of index files.;
+#	ifYesDo "catIntoFile $'<?php\n	phpinfo();\n?>' /var/www/info.php"; # See PHP on server with phpinfo().;
+#	ifYesDo "service apache2 restart"; # restart apache2 so that changes take effect.
+}
+setuplamp4magento;
