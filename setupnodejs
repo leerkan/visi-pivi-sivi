@@ -1,0 +1,16 @@
+#! /bin/bash -
+# auto setup nodejs on ubuntu
+# according to the solution in http://stackoverflow.com/questions/12913141/installing-from-npm-fails
+LC_ALL=C
+# BEGIN Tool Functions
+. $(dirname $0)/pffs
+# END Tool Functions
+
+setupnodejs(){
+	ifYesDo "apt-get purge nodejs npm " "" "Clean/purge old version of nodejs?"; # uninstall ubuntu version nodejs.;
+	ifYesDo "apt-get update" "" "Update package infomation?"; #
+	ifYesDo "apt-get install -y python-software-properties python g++ make" "" "Add(install) dependencies?"; #  add dependency
+	ifYesDo "add-apt-repository ppa:chris-lea/node.js && apt-get update" "" "Add Offical repository to apt, and update package information again. Suggest 'yes'." "according to the solution in http://stackoverflow.com/questions/12913141/installing-from-npm-fails. We need install nodejs from offical respository. Because 'apparently the npm version in the Ubuntu distribution was outdated'"; #add offical source.;
+	ifYesDo "apt-get install nodejs" "" "Then, nodejs will be installed."; #
+}
+setupnodejs;
