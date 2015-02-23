@@ -19,21 +19,33 @@ ifYesDo(){
 	# ifYesDo "echo abc" will ask before eval "echo abc".
 	# with an answer q , the script will be executed quietly.
 	# or you can give the q to the second argument.eg. ifYesDo "echo abc" q.
-	# with a third argument to call ifYesDo, it will ask with the 3rd argument instead of the 1st argument, which will be executed.
+	# With a third argument to call ifYesDo, it will ask with the 3rd argument instead of the 1st argument, which will be executed.
 	#eg. ifYesDo "echo Hello World" "" "Do you want to echo hello world?" ;
+	# The forth argument allow you to written some explainations. So user can see it with the ansower m, when they confused about this question.
+	#eg.  ifYesDo "add-apt-repository ppa:chris-lea/node.js && apt-get update" "" "Add Offical repository to apt, and update package information again. Suggest 'yes'." "according to the solution in http://stackoverflow.com/questions/12913141/installing-from-npm-fails. We need install nodejs from offical respository. Because 'apparently the npm version in the Ubuntu distribution was outdated'"; #add offical source.;
 	local script=${1};
 	local defaultAnswer=${2}
 	local comment=${3};
+	local explaination=${4};
+	local ansOptioins="y/n"
+	case "${explaination}" in
+		"") explaination=${script}; ;;
+		*) ansOptioins=${ansOptioins}"/m"; ;;
+	esac
 	case "${comment}" in
-		"") echo -n "${script}" "[y/n]:" ;;
-		*) echo -n "${comment}" "[y/n]:" ;;
+		"") echo -n "${script}" "[${ansOptioins}]:"; ;;
+		*) ansOptioins=${ansOptioins/\/n/\/n\/d}; echo -n "${comment}" "[${ansOptioins}]:";  ;;
 	esac
 	case ${defaultAnswer} in
 		y|Y|yes|Yes|q|Q|quiet|QUIET|n|N|no|NO) in=${defaultAnswer};
 			echo ${in};;
+		m|M|more|MORE) in=${defaultAnswer};
+			echo ${in};;
 		*) while read in ;do 
 			case "${in}" in
 				y|Y|yes|Yes|q|Q|quiet|QUIET|n|N|no|NO) break ;;
+				d|D|detail|detail) ansOptioins=${ansOptioins/\/d/}; echo -n "${script}" "[${ansOptioins}]:";;
+				m|M|more|MORE) ansOptioins=${ansOptioins/\/m/}; echo -n "${explaination}" "[${ansOptioins}]:";;
 				*) echo -n "press 'yes' or 'no':" ;;
 			esac
 		done;
