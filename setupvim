@@ -9,11 +9,23 @@ setupvim(){
 	local fileDir="/etc/vim/vimrc.local";
 	local templateFileDir=${pffs_var_templateFolderName}"/etc.vim.vimrc.local";
 	local vimVersion=$(vim --version | grep "Vi IMproved"| awk '{print $(5)}');
+	local vimPluginFolderDir="/usr/share/vim/vim${vimVersion/./}/plugin/"
 	local colorFileDir="/usr/share/vim/vim${vimVersion/./}/colors/leerkan.vim"
 	local templateColorFileDir=${pffs_var_templateFolderName}"/usr.share.vim.vim73.colors.leerkan.vim";
+	local jshintFileDir="/usr/share/vim/vim${vimVersion/./}/plugin/jshint.vim"
+	local templateJshintFileDir=${pffs_var_templateFolderName}"/usr.share.vim.vim73.plugin.jshint.vim";
 	ifYesDo "apt-get install  -y vim" "" "install vim now"; # install vim
 	ifYesDo "mustBeExist ${colorFileDir}; cp ${colorFileDir} ${colorFileDir}".bak"; cat ${templateColorFileDir} > ${colorFileDir}" "" "Add colorscheme:Leerkan"; # add color file.;
 	ifYesDo "mustBeExist ${fileDir}; cp ${fileDir} ${fileDir}".bak"; cat ${templateFileDir} > ${fileDir}"; # config vim.;
 	ifYesDo "git config core.editor vim"; # config editor for git;
+	ifYesDo "mustBeExist ${jshintFileDir}; cp ${jshintFileDir} ${jshintFileDir}".bak"; cat ${templateJshintFileDir} > ${jshintFileDir}" "" "Add plugin:jshint. (npm install jshint  is needed.)"; # add jshint file.;
+	ifYesDo "npm install jshint && ln -s ~/node_modules/jshint/bin/jshint ~/bin/" "" "install jshint locally AND link it to ~/bin .";
+	#local jshintLinkName=$(cat ~/node_modules/jshint/package.json|grep ^\ \ \"name\"\:|cut -f 4- -d " "| cut -f 2 -d "\"");
+	local jsBeautifyFolderName="js-beautify";
+	local templateJsBeautifyFolderDir=${pffs_var_templateFolderName}"/usr.share.vim.plugin.js-beautify/";
+	local vimJsBeautifyFolderName="vim-jsbeautify";
+	local templateVIMJsBeautifyFolderDir=${pffs_var_templateFolderName}"/usr.share.vim.plugin.vim-jsbeautify/"
+	ifYesDo "mkdir ${vimPluginFolderDir}${jsBeautifyFolderName} && cp -R ${templateJsBeautifyFolderDir}/* ${vimPluginFolderDir}${jsBeautifyFolderName} && mkdir ${vimPluginFolderDir}${vimJsBeautifyFolderName} && cp -R ${templateVIMJsBeautifyFolderDir}/* ${vimPluginFolderDir}${vimJsBeautifyFolderName} && ln -s ${vimPluginFolderDir}${jsBeautifyFolderName} ${vimPluginFolderDir}${vimJsBeautifyFolderName}/lib" "" "Deploy js-beautify and vim-jsbeautify to vim plugin folder."; # delpoy vim-js-beautify plugin;
+	ifYesDo "sedIntoFile 'tab' ${vimPluginFolderDir}${vimJsBeautifyFolderName}/.editorconfig replace 'space'" "" "Use tab instead of space in JsBeautify."; # reconfig vim-jsbeautify.;
 }
 setupvim;
