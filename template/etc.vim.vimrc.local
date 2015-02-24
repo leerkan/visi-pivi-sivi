@@ -14,7 +14,7 @@ set filetype=javascript
 
 
 " 文件写入格式unix,dos,mac
-set fileformat=dos
+set fileformat=unix
 
 " VIM默认外观样式
 set nu! "显示行号
