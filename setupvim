@@ -19,8 +19,8 @@ setupvim(){
 	ifYesDo "mustBeExist ${fileDir}; cp ${fileDir} ${fileDir}".bak"; cat ${templateFileDir} > ${fileDir}"; # config vim.;
 	ifYesDo "git config core.editor vim"; # config editor for git;
 	ifYesDo "mustBeExist ${jshintFileDir}; cp ${jshintFileDir} ${jshintFileDir}".bak"; cat ${templateJshintFileDir} > ${jshintFileDir}" "" "Add plugin:jshint. (npm install jshint  is needed.)"; # add jshint file.;
-	ifYesDo "npm install jshint && ln -s ~/node_modules/jshint/bin/jshint ~/bin/" "" "install jshint locally AND link it to ~/bin .";
-	#local jshintLinkName=$(cat ~/node_modules/jshint/package.json|grep ^\ \ \"name\"\:|cut -f 4- -d " "| cut -f 2 -d "\"");
+	ifYesDo "npm install jshint && mkdir -p ~/bin/ && ln -s -f ${PWD}/node_modules/jshint/bin/jshint ~/bin/" "" "install jshint locally AND link it to ~/bin .";
+	#local jshintLinkName=$(cat ~/node_modules/jshint/package.json|grep ^\ \ \"name\"\:|cut -f 3- -d " "| cut -f 2 -d "\"");
 	local jsBeautifyFolderName="js-beautify";
 	local templateJsBeautifyFolderDir=${pffs_var_templateFolderName}"/usr.share.vim.vim${vimVersion/./}.plugin.js-beautify";
 	local vimJsBeautifyFolderName="vim-jsbeautify";
