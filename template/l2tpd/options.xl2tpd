@@ -1,0 +1,15 @@
+refuse-mschap-v2
+refuse-mschap
+ms-dns 8.8.8.8
+ms-dns 8.8.4.4
+asyncmap 0
+auth
+lock
+hide-password
+local
+#debug
+name l2tpd
+proxyarp
+lcp-echo-interval 30
+lcp-echo-failure 4
+
