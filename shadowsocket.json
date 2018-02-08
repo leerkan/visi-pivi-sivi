@@ -1,0 +1,24 @@
+{
+  "server": "0.0.0.0",
+  "_comment": {
+    "9999": "me",
+    "9998": "lyy",
+    "9997": "yy",
+    "9996": "godness",
+    "9995": "guest"
+  },
+  "port_password": {
+    "9999": "393939390a",
+    "9998": "6c79790a",
+    "9997": "79790a",
+    "9996": "676f646e6573730a",
+    "9995": "67756573740a"
+  },
+  "local_address": "127.0.0.1",
+  "local_port": 1080,
+  "timeout": 300,
+  "method": "rc4-md5",
+  "fast_open": false,
+  "workers": 1,
+  "prefer_ipv6": false
+}
