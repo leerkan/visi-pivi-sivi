@@ -4,7 +4,7 @@ set fenc=utf-8 "设置写入文档时的解码方式
 set fencs=utf-8,gb18030,gbk,cp936,gb2312,cp950 "设置打开文档时，检测文档的编码方式顺序
 "set encoding=prc
 set encoding=utf-8
-set fileencodings=UTF-8,gb18030,GBK,pc936,GB2312,big5,pc950
+set fileencodings=UTF-8,gb18030,GBK,pc936,GB2312,big5,pc950,chinese,latin-1
 "set termencoding=UTF-8
 "set fileencoding=big5
 
@@ -33,8 +33,10 @@ set softtabstop=4
 "设定自动缩进单位长度
 set shiftwidth=4
 "设置自动读取外部修改，若当前有改动，则需要:e！来强制执行。
+" Setting to auto read the modification occured by other editor/programme.
 set autoread
 "设置vim记录的历史命令个数
+" Setting the number of the recorded history command.
 set history=700
 "设置匹配的括号
 set showmatch
@@ -45,6 +47,7 @@ set cursorcolumn
 "设置文本标准宽度
 set textwidth=0
 "设置文本参考宽度偏移量(相对于标准宽度)
+" Setting the offset of the referenced width for document.
 set colorcolumn=+0
 syntax enable
 syntax on

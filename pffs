@@ -1,11 +1,65 @@
 #! /bin/bash -
-# these public functions for shell.
-# by using ../pffs to source it to current shell environment to call.
+### BEGIN INIT INFO
+# Provides:          pffs
+# Required-Start:    
+# Required-Stop:     
+# Should-Start:      
+# Should-Stop:       
+# X-Start-Before:    $x-display-manager gdm kdm xdm wdm ldm sdm nodm
+# X-Interactive:     true
+# Default-Start:     
+# Default-Stop:      0 1 2 3 4 5 6
+# Short-Description: public functions for shell
+# Descrioption:      These are public functions for shell.
+#                    by using ../pffs to source it to current shell
+#                     environment to call.
+### END INIT INFO
+
+### Original version by Leerkan
+# <d.lrk@outlook.com>, edited by Leerkan
+### Modified for [what] by [who] [<email address>]
+
 setGlobalVariable(){
+	### BEGIN INIT INFO
+	# Provides:          pffs global variable
+	# Required-Start:    
+	# Required-Stop:     
+	# Should-Start:      
+	# Should-Stop:       
+	# X-Start-Before:    $x-display-manager gdm kdm xdm wdm ldm sdm nodm
+	# X-Interactive:     true
+	# Default-Start:     
+	# Default-Stop:      0 1 2 3 4 5 6
+	# Short-Description: set pffs's global variable.
+	# Descrioption:      set pffs's global variable. So all the scripts
+	#                     can use it.
+	### END INIT INFO
+
+	### Original version by Leerkan
+	# <d.lrk@outlook.com>, edited by Leerkan
+	### Modified for [what] by [who] [<email address>]
 	pffs_var_templateFolderName="template";
 }
 setGlobalVariable;
 formatStringToReg(){
+	### BEGIN INIT INFO
+	# Provides:          format the string that will be send to RegExp.
+	# Required-Start:    
+	# Required-Stop:     
+	# Should-Start:      
+	# Should-Stop:       
+	# X-Start-Before:    $x-display-manager gdm kdm xdm wdm ldm sdm nodm
+	# X-Interactive:     true
+	# Default-Start:     
+	# Default-Stop:      0 1 2 3 4 5 6
+	# Short-Description: format the string that will be send to RegExp.
+	# Descrioption:      format the string that will be send to RegExp.
+	#                    To make sure the RegExp will work well 
+	### END INIT INFO
+
+	### Original version by Leerkan
+	# <d.lrk@outlook.com>, edited by Leerkan
+	### Modified for [what] by [who] [<email address>]
 	s="$1";
 	#s=${s//\ /\\\ }
 	s=${s//\//\\\/}
@@ -16,25 +70,41 @@ formatStringToReg(){
 }
 
 ifYesDo(){
-	# ifYesDo "echo abc" will ask before eval "echo abc".
-	# with an answer q , the script will be executed quietly.
-	# or you can give the q to the second argument.eg. ifYesDo "echo abc" q.
-	# With a third argument to call ifYesDo, it will ask with the 3rd argument instead of the 1st argument, which will be executed.
-	#eg. ifYesDo "echo Hello World" "" "Do you want to echo hello world?" ;
-	# The forth argument allow you to written some explainations. So user can see it with the ansower m, when they confused about this question.
-	#eg.  ifYesDo "add-apt-repository ppa:chris-lea/node.js && apt-get update" "" "Add Offical repository to apt, and update package information again. Suggest 'yes'." "according to the solution in http://stackoverflow.com/questions/12913141/installing-from-npm-fails. We need install nodejs from offical respository. Because 'apparently the npm version in the Ubuntu distribution was outdated'"; #add offical source.;
+	### BEGIN INIT INFO
+	# Provides:          Ask Before Processing Interative Service.
+	# Required-Start:    
+	# Required-Stop:     
+	# Should-Start:      
+	# Should-Stop:       
+	# X-Start-Before:    $x-display-manager gdm kdm xdm wdm ldm sdm nodm
+	# X-Interactive:     true
+	# Default-Start:     
+	# Default-Stop:      0 1 2 3 4 5 6
+	# Short-Description: Ask Before Processing Interative Service.
+	# Descrioption:      Ask Before Processing Interative Service.
+	#                    ifYesDo "echo abc" will ask before eval "echo abc".
+	#                    with an answer q , the script will be executed quietly.
+	#                    or you can give the q to the second argument.eg. ifYesDo "echo abc" q.
+	#                    with a third argument to call ifYesDo,
+	#                     it will ask with the 3rd argument instead of the 1st argument,
+	#                     which will be executed.
+	#                    eg. ifYesDo "echo Hello World" "" "Do you want to echo hello world?" ;
+	#                    With a forth argument to call ifYesDo,
+	#                     it will provide more explanation, if user choose "m".
+	#                   eg.  ifYesDo "catIntoFile $'\n	TCPKeepAlive yes\n	ServerAliveInterval 120' /etc/ssh/ssh_config" "" "set the ssh connection keeping alive." "To avoid to be disconnected, if the client not active for a short time."; #set the ssh connection keeping alive.;
+	### END INIT INFO
+
+	### Original version by Leerkan
+	# <d.lrk@outlook.com>, edited by Leerkan
+	### Modified for [what] by [who] [<email address>]
 	local script=${1};
 	local defaultAnswer=${2}
-	local comment=${3};
-	local explaination=${4};
-	local ansOptioins="y/n"
-	case "${explaination}" in
-		"") explaination=${script}; ;;
-		*) ansOptioins=${ansOptioins}"/m"; ;;
-	esac
-	case "${comment}" in
-		"") echo -n "${script}" "[${ansOptioins}]:"; ;;
-		*) ansOptioins=${ansOptioins/\/n/\/n\/d}; echo -n "${comment}" "[${ansOptioins}]:";  ;;
+	local explanation=${3};
+	local moreExplanation=${4};
+	local messageOfPlsChoose="press 'yes' or 'no'. for more info, try [s/e/m]:";
+	case "${explanation}" in
+		"") echo -n "${script}" "[y/n]:" ;;
+		*) echo -n "${explanation}" "[y/n]:" ;;
 	esac
 	case ${defaultAnswer} in
 		y|Y|yes|Yes|q|Q|quiet|QUIET|n|N|no|NO) in=${defaultAnswer};
@@ -44,9 +114,10 @@ ifYesDo(){
 		*) while read in ;do 
 			case "${in}" in
 				y|Y|yes|Yes|q|Q|quiet|QUIET|n|N|no|NO) break ;;
-				d|D|detail|detail) ansOptioins=${ansOptioins/\/d/}; echo -n "${script}" "[${ansOptioins}]:";;
-				m|M|more|MORE) ansOptioins=${ansOptioins/\/m/}; echo -n "${explaination}" "[${ansOptioins}]:";;
-				*) echo -n "press 'yes' or 'no':" ;;
+				s|S|script|Script) echo " "${script}; echo -n " "${messageOfPlsChoose} ;;
+				e|E|explanation|Explanation) echo " "${explanation}; echo -n " "${messageOfPlsChoose} ;;
+				m|M|more|More|MoreExplanation) echo " "${moreExplanation}; echo -n " "${messageOfPlsChoose} ;;
+				*) echo -n " "${messageOfPlsChoose} ;;
 			esac
 		done;
 	esac
@@ -58,9 +129,30 @@ ifYesDo(){
 }
 
 readNonBlankValue(){
-	# EXAMPLE:
-	# read non blank value into the second parameter which is given as 'country' here. The default value is US;
-	#	readNonBlankValue "KEY_CONTURY=" country "US";
+	### BEGIN INIT INFO
+	# Provides:         Read Non-blank Value. 
+	# Required-Start:    
+	# Required-Stop:     
+	# Should-Start:      
+	# Should-Stop:       
+	# X-Start-Before:    $x-display-manager gdm kdm xdm wdm ldm sdm nodm
+	# X-Interactive:     true
+	# Default-Start:     
+	# Default-Stop:      0 1 2 3 4 5 6
+	# Short-Description: Ask Before Processing Interative Service.
+	# Descrioption:      Ask Before Processing Interative Service.
+	#                    EXAMPLE:
+	#                    read non blank value into the second parameter
+	#                     which is given as 'country' here.
+	#                     The default value is US;
+	#                        readNonBlankValue "KEY_CONTURY=" country "US";
+	#                    If there's default value.
+	#                    Then default value will be taken.
+	### END INIT INFO
+
+	### Original version by Leerkan
+	# <d.lrk@outlook.com>, edited by Leerkan
+	### Modified for [what] by [who] [<email address>]
 	local question=${1} ;
 	local answer=${2} ;
 	local defaultAnswer=${3} ;
@@ -103,7 +195,24 @@ readNonBlankValue(){
 }
 
 preDealDir(){
-	# resolve links - $0 may be a softlink
+	### BEGIN INIT INFO
+	# Provides:         pre-deal the string of directory. 
+	# Required-Start:    
+	# Required-Stop:     
+	# Should-Start:      
+	# Should-Stop:       
+	# X-Start-Before:    $x-display-manager gdm kdm xdm wdm ldm sdm nodm
+	# X-Interactive:     true
+	# Default-Start:     
+	# Default-Stop:      0 1 2 3 4 5 6
+	# Short-Description: pre-deal the string of directory.
+	# Descrioption:      pre-deal the string of directory.
+	#                    resolve links - $0 may be a softlink
+	### END INIT INFO
+
+	### Original version by Hugo
+	# <photography.hugohallman.com>, edited by Leerkan
+	### Modified for [what] by [who] [<email address>]
 	PRG="$0"
 	while [ -h "$PRG" ] ; do
 	  ls=`ls -ld "$PRG"`
