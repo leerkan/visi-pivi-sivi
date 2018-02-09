@@ -4,7 +4,7 @@ LC_ALL=C
 # BEGIN Tool Functions
 . $(dirname $0)/pffs
 # END Tool Functions
-setupl2tp(){
+setupl2tp_old(){
 	ifYesDo "catIntoFile $'nospoof on' /etc/host.conf"; # nospoof.;
 	ifYesDo "apt-get -y update"; # update.;
 	ifYesDo "apt-get -y install openswan xl2tpd ppp"; # intall l2tp with default option.;
@@ -23,5 +23,49 @@ setupl2tp(){
 	## save the rules and set them to restore on reboot .;
 	#ifYesDo "iptables-save > /etc/iptables-rules"; # save iptables rules.;
 	#ifYesDo "catIntoFile $'#!/bin/sh\n iptables-restore < /etc/iptables-rules\nexit 0' /etc/network/if-pre-up.d/iptablesload; chmod +x /etc/network/if-pre-up.d/iptablesload;"; # create /etc/network/if-pre-up.d/iptablesload and make it excutable.;
+}
+setupl2tp_old_2(){
+	local templateIpsecConfFileDir=${pffs_var_templateFolderName}"/l2tpd/ipsec.conf";
+	local templateXl2tpdConfFileDir=${pffs_var_templateFolderName}"/l2tpd/xl2tpd.conf";
+	ifYesDo "catIntoFile $'nospoof on' /etc/host.conf"; # nospoof.;
+	ifYesDo "apt-get -y update"; # update.;
+	ifYesDo "iptables --table nat --append POSTROUTING --jump MASQUERADE"; # create nat rule for iptables.;
+	ifYesDo "apt-get -y install openswan xl2tpd ppp"; # intall l2tp with default option.;
+	ifYesDo "cat ${templateIpsecConfFileDir} > /etc/ipsec.conf;"; # create ipsec.conf file
+	ifYesDo "catIntoFile $'${templateIpsecConfFileDir}' /etc/ipsec.conf;"; # create ipsec.conf file
+	ifYesDo "mustBeExist /etc/xl2tpd/; catIntoFile $'${templateIpsecConfFileDir}' /etc/xl2tpd/xl2tpd.conf;"; # create xl2tpd.conf file
+	ifYesDo "echo 'net.ipv4.ip_forward = 1' |  tee -a /etc/sysctl.conf; echo 'net.ipv4.conf.all.accept_redirects = 0' |  tee -a /etc/sysctl.conf; echo 'net.ipv4.conf.all.send_redirects = 0' |  tee -a /etc/sysctl.conf; for vpn in /proc/sys/net/ipv4/conf/*; do 	echo 0 > \$vpn/accept_redirects; echo 0 > \$vpn/send_redirects;done; sysctl -p"; # enable kernel IP packet forwarding and disable ICP redirects.;
+	ifYesDo "catIntoFile 'test	l2tpd	vpn4testonly			*' /etc/ppp/chap-secrets;"; # configure /etc/ppp/chap-secretes to add user.;
+}
+
+setupl2tp(){
+	local templateIpsecConfFileDir=${pffs_var_templateFolderName}"/l2tpd/ipsec.conf";
+	local templateIPSecVPNServiceFileDir=${pffs_var_templateFolderName}"/l2tpd/etc_init.d_ipsec.vpn";
+	local templateXl2tpdConfFileDir=${pffs_var_templateFolderName}"/l2tpd/xl2tpd.conf";
+	local templateOptionsXl2tpdFileDir=${pffs_var_templateFolderName}"/l2tpd/options.xl2tpd";
+	local hostServerIPAddress=$(ifconfig |grep 255.255.255.0|awk '{print $(2)}'|awk -F: '{print $(2)}');
+	local passwordForIPSec='passwordForIPSec';
+	ifYesDo "catIntoFile $'nospoof on' /etc/host.conf"; # nospoof.;
+	ifYesDo "apt-get -y update"; # update.;
+	ifYesDo "iptables --table nat --append POSTROUTING --jump MASQUERADE"; # create nat rule for iptables.;
+	ifYesDo "apt-get -y install openswan xl2tpd ppp"; # intall l2tp with default option.;
+	# ifYesDo "cat ${templateIpsecConfFileDir} > /etc/ipsec.conf;"; # create ipsec.conf file
+	ifYesDo "catIntoFile $'${templateIpsecConfFileDir}' /etc/ipsec.conf;"; # create ipsec.conf file
+	ifYesDo "readNonBlankValue 'Please provide the IP address of this server(${hostServerIPAddress}):' hostServerIPAddress $'${hostServerIPAddress}'; readNonBlankValue 'Please provide the password for IPsec(${passwordForIPSec}):' passwordForIPSec $'${passwordForIPSec}'; setIntoFile '${hostServerIPAddress}   %any:   PSK  \"${passwordForIPSec}\";/etc/init.d/ipsec status; echo 'NOW start ipsec'; /etc/init.d/ipsec start;/etc/init.d/ipsec status;'";
+	ifYesDo "ipsec verify;"
+	ifYesDo "echo 0 > /proc/sys/net/ipv4/conf/default/send_redirects; echo 0 > /proc/sys/net/ipv4/conf/default/accept_redirects;"
+	ifYesDo "catIntoFile $'${templateIPSecVPNServiceFileDir}' /etc/init.d/ipsec.vpn; sudo chmod 755 /etc/init.d/ipsec.vpn; update-rc.d -f ipsec remove; update-rc.d ipsec.vpn defaults;";
+	ifYesDo "echo 'setting l2tp'";
+	ifYesDo "mustBeExist /etc/xl2tpd/; catIntoFile $'${templateXl2tpdConfFileDir}' /etc/xl2tpd/xl2tpd.conf; sedIntoFile 'local ip = ${hostServerIPAddress}' /etc/xl2tpd/xl2tpd.conf replace 'local ip = 10.152.2.1';";
+	ifYesDo "sedIntoFile '* * exampleforchanllengestring' /etc/xl2tpd/l2tp-secrets after '# *	*	interop';";
+	ifYesDo "catIntoFile $'${templateOptionsXl2tpdFileDir}' /etc/ppp/options.xl2tpd;";
+	#ifYesDo "echo 'net.ipv4.ip_forward = 1'| tee -a /etc/sysctl.conf; sysctl -p;'";
+	ifYesDo "sedIntoFile 'net.ipv4.ip_forward=1' /etc/sysctl.conf after '#net.ipv4.ip_forward=1' ; sysctl -p ;"; # enable net.ipv4.ip_forward.;
+	ifYesDo "/etc/init.d/ipsec.vpn restart";
+	ifYesDo "/etc/init.d/xl2tpd restart";
+
+
+	ifYesDo "echo 'net.ipv4.ip_forward = 1' |  tee -a /etc/sysctl.conf; echo 'net.ipv4.conf.all.accept_redirects = 0' |  tee -a /etc/sysctl.conf; echo 'net.ipv4.conf.all.send_redirects = 0' |  tee -a /etc/sysctl.conf; for vpn in /proc/sys/net/ipv4/conf/*; do 	echo 0 > \$vpn/accept_redirects; echo 0 > \$vpn/send_redirects;done; sysctl -p"; # enable kernel IP packet forwarding and disable ICP redirects.;
+	ifYesDo "catIntoFile 'test	l2tpd	vpn4testonly			*' /etc/ppp/chap-secrets;"; # configure /etc/ppp/chap-secretes to add user.;
 }
 setupl2tp;
